@@ -1,0 +1,32 @@
+version: '3.4'
+
+networks:
+    backend:
+
+services:
+  webrtcchatdb:
+    container_name: WebRTCChat-db
+    image: mcr.microsoft.com/mssql/server:2019-latest   
+    environment:
+       - ACCEPT_EULA=Y
+       - MSSQL_SA_PASSWORD=testsa12345
+    networks:
+       - backend
+    ports:
+       - 8001:1433
+  authenticationwebapi:
+    container_name: authentication-api
+    image: ${DOCKER_REGISTRY-}authenticationwebapi
+    build:
+      context: .
+      dockerfile: AuthenticationWebApi/Dockerfile
+    networks:
+      - backend
+    ports:
+       - 8002:80
+    environment:
+      - DB_HOST=webrtcchatdb
+      - DB_NAME=WebRTCChat
+      - DB_SA_PASSWORD=testsa12345
+  
+  
